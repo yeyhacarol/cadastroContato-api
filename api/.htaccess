@@ -1,0 +1,15 @@
+#ativação das permissões do servidor apache nas requisições da api
+
+<IfModule mod_rewrite.c>
+    Header set Access-Control-Allow-Origin: "*"
+    Header set Access-Control-Allow-Methods: "POST,GET,PUT,DELETE,OPTIONS"
+    Header set Access-Control-Allow-Headers: "X-Requetest-Width, Content-Type" 
+</IfModule>
+
+#para omitir a estrutura do caminho local da url e manter apenas o necessário para acessar a api; encaminhar para a variável url
+RewriteEngine On
+Options All -Indexes
+
+DirectoryIndex index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*) index.php?url=$1 [QSA,L]
