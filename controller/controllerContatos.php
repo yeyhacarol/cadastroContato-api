@@ -62,7 +62,7 @@
     //função que procurará no banco o contato que deverá ser editado
     function buscarContato($id) {
         if ($id != 0 && !empty($id) && is_numeric($id)) {
-            require_once(SRC.'/model/bd/contato.php');
+            require_once(SRC.'model/bd/contato.php');
 
             //solicitando a função da model(contato.php) que vai buscar os dados no banco
             $dados = selectByIdContato($id);
@@ -155,20 +155,18 @@
         //verificando se o id é válido; diferente de zero, existente e númerico respectivamente
         if($id != 0 && !empty($id) && is_numeric($id)) {
             //import da model
-            require_once('model/bd/contato.php');
-            require_once('modulo/config.php');
+            require_once(SRC.'model/bd/contato.php');
 
             //chamando a função da model e verificando se o retorno foi true/false e exibindo mensagens em caso de erro
             if(deleteContato($id)) {
-
                 /* validando caso a imagem não exista com o registro */
                 if ($foto != null) {
                     /* função para deletar arquivos de um diretório, do php. aqui apagamos a foto fisicamente do diretório no servidor */
-                    if(unlink(FILE_DIRECTORY_UPLOAD.$foto)) {
+                    if(@unlink(SRC.FILE_DIRECTORY_UPLOAD.$foto)) {
                         return true;
                     } else {
                         return array('idErro'  => 5,
-                                 'message' => 'O banco conseguiu deletar registro, mas a imagem não foi excluída do diretório no servidor.');
+                                     'message' => 'O banco conseguiu deletar registro, mas a imagem não foi excluída do diretório no servidor.');
                     }
                 } else {
                     return true;
@@ -186,7 +184,7 @@
     //função para solicitar os dados da model e encaminhar a lista de contatos para a view (inserir)
     function listarContato() {
             //import do arquivo que busca dados no banco
-            require_once(SRC.'/model/bd/contato.php');
+            require_once(SRC.'model/bd/contato.php');
 
             //chamando a função que busca os dados no banco e armazenando-a em uma variável para uso posterior
             $dados = selectAllContatos();

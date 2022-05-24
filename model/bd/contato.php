@@ -83,7 +83,18 @@ function selectByIdContato($id)
     $conexao = conexaoMySql();
 
     //script para listar os contatos da tabela presente no banco de dados referenciando o id
-    $sql = "select * from tblContatos where idContato = " . $id;
+    $sql = "select
+            tblcontatos.idContato,
+            tblcontatos.nome as nomeContato,
+            tblcontatos.telefone,
+            tblcontatos.celular,
+            tblcontatos.email,
+            tblcontatos.obs,
+            tblcontatos.foto,
+            tblestados.idEstado,
+            tblestados.sigla,
+            tblestados.nome as nomeEstado
+        from tblcontatos inner join tblestados on tblcontatos.idEstado = tblestados.idEstado where tblcontatos.idContato = " . $id;
     //executa o script e armazena o retorno dos dados
     $result = mysqli_query($conexao, $sql);
 
@@ -95,20 +106,28 @@ function selectByIdContato($id)
                   lembrando que a recepção dos dados do banco foram convertidos para um array e por isso o retorno que temos é em formato de chave considerando os nomes dados lá no banco */
             $arrayDados = array(
                 "id"       => $resultDados['idContato'],
-                "nome"     => $resultDados['nome'],
+                "nome"     => $resultDados['nomeContato'],
                 "telefone" => $resultDados['telefone'],
                 "celular"  => $resultDados['celular'],
                 "email"    => $resultDados['email'],
                 "obs"      => $resultDados['obs'],
                 "foto"     => $resultDados['foto'],
-                "idEstado" => $resultDados['idEstado']
+                "estado"   => array(
+                    "idEstado" => $resultDados['idEstado'],
+                    "sigla"    => $resultDados['sigla'],
+                    "estado"   => $resultDados['nomeEstado']
+                )
             );
         }
 
         //função para fechar a conexão informando qual é o banco, nesse caso armazenado na variável $conexao
         fecharConexaoMySql($conexao);
 
-        return $arrayDados;
+        if (isset($arrayDados)) {
+            return $arrayDados;
+        } else {
+            return false;
+        }
     }
 }
 

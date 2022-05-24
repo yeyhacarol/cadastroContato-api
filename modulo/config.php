@@ -12,7 +12,7 @@ const FILE_EXT_UPLOAD = array("image/jpg", "image/png", "image/jpeg", "image/gif
 const FILE_DIRECTORY_UPLOAD = "arquivos/";
 
 //retorna o caminho absoluto físico do servidor  
-define('SRC', $_SERVER['DOCUMENT_ROOT'].'/carol/aula07');
+define('SRC', $_SERVER['DOCUMENT_ROOT'].'/carol/aula07/');
 
 //Funções globais do projeto
 /* função para converter um array em um formato json */
