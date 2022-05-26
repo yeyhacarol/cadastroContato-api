@@ -22,11 +22,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD'] == 'GET')
             //verificando o tipo de ação requerida
             if ($action == 'INSERIR') {
 
+                //validando para tratar se imagem existe na chegada dos dados do html
                 if (isset($_FILES) && !empty($_FILES)) {
+
+                    //array que obtém todos os dados vindos do html e da api
+                    $arrayDados = array(
+                        $_POST, 
+                        "file" => $_FILES
+                    );
+
                     //chamar a função de inserir da controller
-                    $promessa = inserirContato($_POST, $_FILES);
+                    $promessa = inserirContato($arrayDados);
                 } else {
-                    $promessa = inserirContato($_POST, null);
+                    $arrayDados = array(
+                        $_POST, 
+                        "file" => null
+                    );
+
+                    $promessa = inserirContato($arrayDados);
                 }
                 /*verificando o tipo de dado retornado. se for um booleano, verificará se é verdadeiro e emitirá uma mensagem de sucesso,
                   caso contrário, verificará se é um array nesse caso emitirá uma mensagem de erro */

@@ -2,26 +2,29 @@
    /*  Objetivo: arquivo responsável pela manipulação de dados de contatos. Este arquivo fará a ponte entre a view e a model; 
     autora: Carolina Silva; data de criação: 04/03/2022; última modificação: 26/04/2022; versão: 1.0 */ 
 
-    require_once(SRC.'/modulo/config.php');
+    require_once(SRC.'modulo/config.php');
 
     //função para receber os dados da view e encaminhar para a model (inserir)
-    function inserirContato($dadosContato, $file) {
+    function inserirContato($dadosContato) {
         /* declarando variável e iniciando como nula para o caso de não haver upload */
         $nomeFoto = (string) null;
 
         //verificando se o objeto $dadosContato não está vazio
         if (!empty($dadosContato)) {
+            //armazenando numa variável o objeto imagem que foi encaminhado dentro do array
+            $file = $dadosContato['file'];
+
             //validando se as caixas de texto de nome, celular email e estado não estão vazias, pois o preenchimento é obrigatório no banco de dados
-            if (!empty($dadosContato['txtNome']) && !empty($dadosContato['txtCelular']) && !empty($dadosContato['txtEmail']) && !empty($dadosContato['sltEstado'])) {
+            if (!empty($dadosContato[0]['nome']) && !empty($dadosContato[0]['celular']) && !empty($dadosContato[0]['email']) && !empty($dadosContato[0]['estado'])) {
  
                 /* validando se chegou algum arquivo para upload */
-                if ($file['fleFoto']['name'] != null) {
+                if ($file['foto']['name'] != null) {
 
-                    /* import do arquivo que contém a função de upload */
-                    require_once('modulo/upload.php');
+                    /* import do arquivo que contém a função de upload */       
+                    require_once(SRC.'modulo/upload.php');
 
                     /* chamando a função de upload */
-                    $nomeFoto = uploadFile($file['fleFoto']);
+                    $nomeFoto = uploadFile($file['foto']);
 
                     /* verificando se tudo ocorreu como esperado ou não */
                     if (is_array($nomeFoto)) {
@@ -34,17 +37,17 @@
                 /*criação do array que contém dados que serão encaminhados para a model para inserção deles no bd.
                  é importante criar o array conforme as necessidades do bd e de acordo com a nomenclatura utilizada nele*/
                 $arrayDados = array (
-                    "nome"     => $dadosContato['txtNome'],
-                    "telefone" => $dadosContato['txtTelefone'],
-                    "celular"  => $dadosContato['txtCelular'],
-                    "email"    => $dadosContato['txtEmail'],
-                    "obs"      => $dadosContato['txtObs'],
+                    "nome"     => $dadosContato[0]['nome'],
+                    "telefone" => $dadosContato[0]['telefone'],
+                    "celular"  => $dadosContato[0]['celular'],  
+                    "email"    => $dadosContato[0]['email'],
+                    "obs"      => $dadosContato[0]['obs'],
                     "foto"     => $nomeFoto,
-                    "idEstado"   => $dadosContato['sltEstado']
+                    "idEstado"   => $dadosContato[0]['estado']
                 );
     
                 //importar arquivo de manipulação de dados do bd
-                require_once('model/bd/contato.php');
+                require_once(SRC.'model/bd/contato.php');
                 //função presente na model
                 if(insertContato($arrayDados)) {
                     return true;
@@ -90,11 +93,11 @@
 
         if (!empty($dadosContato)) {
             //validando se as caixas de texto de nome e celular não estão vazias, pois o preenchimento é obrigatório no banco de dados
-            if (!empty($dadosContato['txtNome']) && !empty($dadosContato['txtCelular']) && !empty($dadosContato['txtEmail'])) {
+            if (!empty($dadosContato['nome']) && !empty($dadosContato['celular']) && !empty($dadosContato['email'])) {
                 /* validando o id para garantir que ele seja válido */
                 if($id != 0 && !empty($id) && is_numeric($id)) {
                     /* verificando se o arquivo existe. verifica se será enviada uma nova foto ao servidor */
-                    if ($file['fleFoto']['name'] != null) {
+                    if ($file['foto']['name'] != null) {
                         /* import do arquivo que contém a função de upload */
                         require_once('modulo/upload.php');
                         /* chamando a função para atualizar o arquivo que recebe como parâmetro o arquivo */
@@ -110,13 +113,13 @@
                      é importante criar o array conforme as necessidades do bd e de acordo com a nomenclatura utilizada nele*/
                     $arrayDados = array (
                         "id"       => $id,
-                        "nome"     => $dadosContato['txtNome'],
-                        "telefone" => $dadosContato['txtTelefone'],
-                        "celular"  => $dadosContato['txtCelular'],
-                        "email"    => $dadosContato['txtEmail'],
-                        "obs"      => $dadosContato['txtObs'],
+                        "nome"     => $dadosContato['nome'],
+                        "telefone" => $dadosContato['telefone'],
+                        "celular"  => $dadosContato['celular'],
+                        "email"    => $dadosContato['email'],
+                        "obs"      => $dadosContato['obs'],
                         "foto"     => $novaFoto,
-                        "idEstado" => $dadosContato['sltEstado']
+                        "idEstado" => $dadosContato['estado']
                     );
         
                     //importar arquivo de manipulação de dados do bd; import do arquivo de configuração 

@@ -4,7 +4,7 @@
 /* função para realizar upload de imagem */
 function uploadFile($arrayFile)
 {
-    require_once('modulo/config.php');
+    require_once(SRC.'modulo/config.php');
 
     $arquivo = $arrayFile;
     $sizeFile = (int) 0;
@@ -50,7 +50,7 @@ function uploadFile($arrayFile)
                 $foto = $nomeCriptografado . "." . $extensao;
 
                 /* envia o arquivo da pasta temporária do apache para a pasta criada no projeto */
-                if (move_uploaded_file($tempFile, FILE_DIRECTORY_UPLOAD . $foto)) {
+                if (move_uploaded_file($tempFile, SRC.FILE_DIRECTORY_UPLOAD . $foto)) {
                     return $foto;
                 } else {
                     return array(

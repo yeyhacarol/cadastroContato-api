@@ -1,5 +1,4 @@
 <?php 
-
 //arquivo que ativa os serviços do slim que fará as instâncias so slim
 require_once('vendor\autoload.php');
 
@@ -64,7 +63,75 @@ $app->get('/contatos/{id}', function($request, $response, $args) {
 
 //EndPoint: requisição para inserir um novo contato
 $app->post('/contatos', function($request, $response, $args) {
-    /* 201 */
+    //antes de iniciar o post da API, devemos estabelecer qual o formato de dados da api(json, form-data etc)
+
+    //recebe do header da requisição o content-type
+    $contentTypeHeader = $request->getHeaderLine('Content-Type');
+
+    //criando um array com as informações separadas em duas partes
+    $contentType = explode(";", $contentTypeHeader);
+    
+    switch ($contentType[0]) {
+        case 'multipart/form-data': 
+            //recebimento dos dados comuns enviados pelo corpo da requisição
+            $dadosBody = $request->getParsedBody();
+            
+            //recebe o arquivo(imagem) enviado pelo corpo da requisição
+            $uploadedFiles = $request->getUploadedFiles();
+            
+            //array criado devido aos dados serem protegidos, assim podemos resgatá-los para posterior uso
+            $arrayFoto = array(
+                "size"     => $uploadedFiles['foto']->getSize(),            //resgatando o tamanho do arquivo
+                "type"     => $uploadedFiles['foto']->getClientMediaType(), //resgatando o tipo do arquivo
+                "name"     => $uploadedFiles['foto']->getClientFileName(),  //resgatando o nome do arquivo
+                "tmp_name" => $uploadedFiles['foto']->file                  //resgatando o file, sendo que ele não é protegido por iso podemos resgatá-lo diretamente
+            );
+
+            //criando uma chave foto para inserir todos os dados do objeto conforme é gerado em um form html para evitar diferença entre os dados
+            $file = array("foto" => $arrayFoto);
+
+            //criando um array com todos os dados, os comuns e arquivo, que serão enviados para o servidor
+            $arrayDados = array(
+                $dadosBody,
+                "file" => $file
+            );
+
+            //import dos arquivos necessários para chamar a função
+            require_once('../modulo/config.php');
+            require_once('../controller/controllerContatos.php');
+
+            //chamando função da controller para inserção dos dados
+            $resposta = inserirContato($arrayDados);
+
+            //verifica se a resposta da controller é verdadeira e é igual a true, se sim retornará uma mensagem de sucesso
+            //se o que foi retornado é um array e possui a chave erro será retornado uma mensagem de erro
+            if (is_bool($resposta) && $resposta == true) {
+                return $response ->withStatus(200)
+                                 ->withHeader('Content-Type', 'application/json')
+                                 ->write('{"message": "Registro inserido com sucesso."}');
+            } elseif (is_array($resposta) && isset($resposta['idErro'])) {
+                $contatoJson = createJson($resposta);
+
+                return $response ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json')
+                ->write('{"message": "Registro não pôde ser inserido.",
+                          "erro": '.$contatoJson.'}');
+            }
+
+            break;
+
+        case 'application/json':
+            return $response ->withStatus(200)
+                             ->withHeader('Content-Type', 'application/json')
+                             ->write('{"message": "formato json"}');
+            break;
+        
+        default:
+            return $response ->withStatus(400)
+                             ->withHeader('Content-Type', 'application/json')
+                             ->write('{"message": " Formato Content-Type inválido nesta requisição."}');
+            break;
+    }
 });
 
 //EndPoint: requisição para deletar contato por id
@@ -122,4 +189,5 @@ $app->delete('/contatos/{id}', function($request, $response, $args) {
 
 //linha que excuta todos os endpoints
 $app->run();
+
 ?>
