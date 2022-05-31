@@ -116,10 +116,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD'] == 'GET')
                 $arrayDados = array(
                     "id"   => $idContato,
                     "foto" => $foto,
-                    "file" => $_FILES 
+                    "file" => $_FILES,
+                    $_POST 
                 );
 
-                $promessa = atualizarContato($_POST, $arrayDados);
+                $promessa = atualizarContato($arrayDados);
                 /*verificando o tipo de dado retornado. se for um booleano, verificará se é verdadeiro e emitirá uma mensagem de sucesso,
                   caso contrário, verificará se é um array nesse caso emitirá uma mensagem de erro */
                 if(is_bool($promessa)) {

@@ -83,25 +83,25 @@
     }
 
     //função para receber os dados da view e encaminhar para a model (atualizar)
-    function atualizarContato($dadosContato, $arrayDados) {
+    function atualizarContato($dadosContato) {
         $statusUpload = (bool) false;
         /* recebe id, a foto(nome da foto que já existe) enviada pelo arrayDados */
-        $id = $arrayDados['id'];
-        $foto = $arrayDados['foto'];
+        $id = $dadosContato['id'];
+        $foto = $dadosContato['foto'];
         //objeto de array referente a nova foto que poderá ser enviada ao servidor
-        $file = $arrayDados['file'];
+        $file = $dadosContato['file'];
 
         if (!empty($dadosContato)) {
             //validando se as caixas de texto de nome e celular não estão vazias, pois o preenchimento é obrigatório no banco de dados
-            if (!empty($dadosContato['nome']) && !empty($dadosContato['celular']) && !empty($dadosContato['email'])) {
+            if (!empty($dadosContato[0]['nome']) && !empty($dadosContato[0]['celular']) && !empty($dadosContato[0]['email'])) {
                 /* validando o id para garantir que ele seja válido */
                 if($id != 0 && !empty($id) && is_numeric($id)) {
                     /* verificando se o arquivo existe. verifica se será enviada uma nova foto ao servidor */
                     if ($file['foto']['name'] != null) {
                         /* import do arquivo que contém a função de upload */
-                        require_once('modulo/upload.php');
+                        require_once(SRC.'modulo/upload.php');
                         /* chamando a função para atualizar o arquivo que recebe como parâmetro o arquivo */
-                        $novaFoto = uploadFile($file['fleFoto']);
+                        $novaFoto = uploadFile($file['foto']);
 
                         $statusUpload = true;
                     } else {
@@ -113,25 +113,24 @@
                      é importante criar o array conforme as necessidades do bd e de acordo com a nomenclatura utilizada nele*/
                     $arrayDados = array (
                         "id"       => $id,
-                        "nome"     => $dadosContato['nome'],
-                        "telefone" => $dadosContato['telefone'],
-                        "celular"  => $dadosContato['celular'],
-                        "email"    => $dadosContato['email'],
-                        "obs"      => $dadosContato['obs'],
+                        "nome"     => $dadosContato[0]['nome'],
+                        "telefone" => $dadosContato[0]['telefone'],
+                        "celular"  => $dadosContato[0]['celular'],
+                        "email"    => $dadosContato[0]['email'],
+                        "obs"      => $dadosContato[0]['obs'],
                         "foto"     => $novaFoto,
-                        "idEstado" => $dadosContato['estado']
+                        "idEstado" => $dadosContato[0]['estado']
                     );
         
                     //importar arquivo de manipulação de dados do bd; import do arquivo de configuração 
-                    require_once('model/bd/contato.php');
-                    require_once('modulo/config.php');
+                    require_once(SRC.'model/bd/contato.php');
                     
                     //função presente na model
                     if(updateContato($arrayDados)) {
                         //validando se será necessário apagar a foto antiga. ativada em true na linha 101, quando realizamos o upload de uma nova foto para o servidor
                         if ($statusUpload) {
                             //apaga a foto antiga do servidor
-                            unlink(FILE_DIRECTORY_UPLOAD.$foto);
+                            unlink(SRC.FILE_DIRECTORY_UPLOAD.$foto);
                         }
                         return true;
                     } else {

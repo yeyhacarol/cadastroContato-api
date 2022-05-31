@@ -31,7 +31,7 @@ if (session_status()) {
         $email    = $_SESSION['dadosContato']['email'];
         $obs      = $_SESSION['dadosContato']['obs'];
         $foto     = $_SESSION['dadosContato']['foto'];
-        $idEstado = $_SESSION['dadosContato']['idEstado'];
+        $idEstado = $_SESSION['dadosContato']['estado']['idEstado'];
 
         /* quando o botão de editar for acionado e os dados forem armazenados na session, a url será modificada do qual a action será de editar.
          concatenando com o id para sabermos qual o contato a ser editadoS*/
